@@ -267,7 +267,7 @@ def is_string(input: str) -> bool:
 
 
 def parse(text: str) -> list[Region]:
-    """Parses the given text and returns a list of regions.
+    """Parses the given text and returns a list of regions for highligting.
 
     Args:
         text (str): The text to parse.
