@@ -6,6 +6,7 @@ class SqlSyntaxEnum(Enum):
     KEYWORD = 1
     COMMENT = 2
     NUMBER = 3
+    STRING = 4
 
     @property
     def color(self):
@@ -16,3 +17,5 @@ class SqlSyntaxEnum(Enum):
                 return 'green'
             case SqlSyntaxEnum.NUMBER:
                 return 'green'
+            case SqlSyntaxEnum.STRING:
+                return 'orange'

@@ -233,6 +233,39 @@ def is_keyword(input: str) -> bool:
     return input in KEYWORDS
 
 
+def is_string(input: str) -> bool:
+    """Returns whether the given input is a string.
+
+    Args:
+        input (str): The input to check.
+
+    Returns:
+        bool: Whether the given input is a string.
+
+    Examples:
+        >>> is_string("'string'")
+        True
+
+        >>> is_string("'string")
+        False
+
+        >>> is_string("string")
+        False
+
+        >>> is_string("'")
+        False
+
+        >>> is_string("''")
+        True
+    """
+    l = len(input)
+
+    if l < 2:
+        return False
+
+    return input[0] == "'" and input[len(input) - 1] == "'"
+
+
 def parse(text: str) -> list[Region]:
     """Parses the given text and returns a list of regions.
 
@@ -271,6 +304,10 @@ def parse(text: str) -> list[Region]:
             buff += char
             if char == " ":
                 buff = ""
+            if char == ";":
+                buff = ""
+                idx += 1
+                continue
 
         # region Comments
         if is_start_comment(text[idx-1:idx+1]) and comment_buff == "":
@@ -299,6 +336,13 @@ def parse(text: str) -> list[Region]:
             if is_number(buff):
                 regions.append(Region(n_of_lines, n_of_chars-len(buff),
                                       len(buff), SqlSyntaxEnum.NUMBER))
+                buff = ""
+                idx += 1
+                continue
+
+            if is_string(buff):
+                regions.append(Region(n_of_lines, n_of_chars-len(buff),
+                                      len(buff), SqlSyntaxEnum.STRING))
                 buff = ""
                 idx += 1
                 continue
