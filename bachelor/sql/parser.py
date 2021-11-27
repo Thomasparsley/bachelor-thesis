@@ -267,7 +267,7 @@ def is_string(input: str) -> bool:
 
 
 def parse(text: str) -> list[Region]:
-    """Parses the given text and returns a list of regions for highligting.
+    """Parses the given text and returns a list of regions for highlighting.
 
     Args:
         text (str): The text to parse.
@@ -347,7 +347,7 @@ def parse(text: str) -> list[Region]:
                 idx += 1
                 continue
 
-            if is_keyword(buff) or is_number(buff):
+            if is_keyword(buff):
                 regions.append(Region(n_of_lines, n_of_chars-len(buff),
                                       len(buff), SqlSyntaxEnum.KEYWORD))
                 buff = ""
