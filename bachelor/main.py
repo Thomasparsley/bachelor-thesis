@@ -1,41 +1,79 @@
 import tkinter as tk
 
-from sql import highligter
+import sqlparse
+
+from sql import highlighter
 
 
-def highlighter(event):
-    highligter.highlight(text_editor)
+def sql_editor(root: tk.Tk):
+    # Likes like spaghetti code :(
+    frame = tk.Frame(root)
+    frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+
+    buttons_frame = tk.Frame(frame)
+    buttons_frame.pack(side=tk.LEFT, anchor=tk.N)
+
+    textarea = tk.Text(frame)
+    textarea.bind("<KeyRelease>",
+                  lambda e: highlighter.highlight(textarea))
+    textarea.pack(side=tk.RIGHT)
+
+    # Format function for format button
+    def format(widget: tk.Text) -> None:
+        temp = widget.get("1.0", tk.END)
+        widget.delete("1.0", tk.END)
+
+        widget.insert(tk.END,
+                      sqlparse.format(temp,
+                                      reindent=True, keyword_case='upper', use_space_around_operators=True))
+        highlighter.highlight(widget)
+
+    # Change to class?
+    buttons_data = [
+        {
+            "text": "Run All",
+            "command": lambda: None,
+        },
+        {
+            "text": "Format",
+            "command": lambda: format(textarea),
+        }
+    ]
+
+    for data in buttons_data:
+        data = tk.Button(buttons_frame,
+                         text=data["text"], command=data["command"])
+        data.pack(side=tk.TOP)
+
+
+def terminal(root: tk.Tk):
+    frame = tk.Frame(root)
+    frame.grid(row=1, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+
+    terminal_output = tk.Text(frame)
+    terminal_output.grid(row=0, column=0, columnspan=2,
+                         sticky=tk.W+tk.E+tk.N+tk.S)
+
+    terminal_input_label = tk.Label(frame, text=">>>")
+    terminal_input_label.grid(row=1, column=0)
+
+    terminal_input = tk.Entry(frame)
+    terminal_input.grid(row=1, column=1, sticky=tk.W+tk.E+tk.N+tk.S)
+
+
+def footer(root: tk.Tk):
+    frame = tk.Frame(root)
+    frame.grid(row=2, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+
+    info = tk.Label(frame, text="connected to: 127.0.0.1:8080    |\
+    db server: postres    |    last query: 0ms    |    example info")
+    info.pack()
 
 
 root = tk.Tk()
 
-# region SQL editor
-run_sql = tk.Button(root, text="Run")
-run_sql.grid(row=0, column=0)
-
-run_all_sql = tk.Button(root, text="Run All")
-run_all_sql.grid(row=1, column=0)
-
-format_sql = tk.Button(root, text="Format")
-format_sql.grid(row=2, column=0)
-
-text_editor = tk.Text(root)
-text_editor.bind("<KeyRelease>", highlighter)
-text_editor.grid(row=0, rowspan=3, column=1, sticky=tk.W+tk.E+tk.N+tk.S)
-# endregion
-
-terminal_output = tk.Text(root)
-terminal_output.grid(row=3, column=0, columnspan=2, sticky=tk.W+tk.E+tk.N+tk.S)
-
-
-terminal_input_label = tk.Label(root, text=">>>")
-terminal_input_label.grid(row=4, column=0)
-
-terminal_input = tk.Entry(root)
-terminal_input.grid(row=4, column=1, sticky=tk.W+tk.E+tk.N+tk.S)
-
-footer_info_example = tk.Label(root, text="connected to: 127.0.0.1:8080    |\
-    db server: postres    |    last query: 0ms    |    example info")
-footer_info_example.grid(row=5, column=0, columnspan=2)
+sql_editor(root)
+terminal(root)
+footer(root)
 
 root.mainloop()
