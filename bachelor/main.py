@@ -1,100 +1,70 @@
 import tkinter as tk
+import os
 
-import sqlparse
+import psycopg2
 
-from sql import highlighter
-
-
-class ButtonList(tk.Frame):
-    def __init__(self, root: tk.Tk,  side, buttons: list):
-        super().__init__(root)
-
-        for button in buttons:
-            btn = tk.Button(self,
-                            text=button["text"], command=button["command"])
-            btn.pack(side=side)
+from sqleditor import SqlEditorFrame
+from terminal import TerminalFrame
 
 
-class SqlEditorFrame(tk.Frame):
-    def __init__(self, root: tk.Tk):
-        super().__init__(root)
+class App(tk.Tk):
 
-        self.textarea_frame()
+    def __init__(self):
+        super().__init__()
 
-        buttons_data = [
-            {
-                "text": "Run All",
-                "command": lambda: None,
-            },
-            {
-                "text": "Format",
-                "command": lambda: format(self.textarea),
-            }
-        ]
+        self.db_conn = psycopg2.connect(
+            "host=localhost dbname=bachelor user=root password=root")
 
-        self.buttons = ButtonList(self, tk.TOP, buttons_data)
-        self.buttons.pack(side=tk.LEFT, anchor=tk.N)
+        self.title("Bachelor App")
 
-    def textarea_frame(self):
-        self.textarea = tk.Text(self)
-        self.textarea.bind("<KeyRelease>",
-                           lambda e: highlighter.highlight(self.textarea))
-        self.textarea.pack(side=tk.RIGHT)
+        self.__sql_editor__()
+        self.__terminal__()
+        self.__footer__()
 
-    def __format__(self, widget: tk.Text):
-        """Format function for format button."""
-        temp = widget.get("1.0", tk.END)
-        widget.delete("1.0", tk.END)
+        self.bind("<<RunAllSql>>", self.run_all_sql)
+        self.bind("<<RunSelectedSql>>", self.run_selected_sql)
 
-        widget.insert(tk.END,
-                      sqlparse.format(temp, reindent=True, keyword_case='upper',
-                                      use_space_around_operators=True))
-        highlighter.highlight(widget)
+    def __sql_editor__(self):
+        self.sql_editor_frame = SqlEditorFrame(self)
+        self.sql_editor_frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
 
+    def __terminal__(self):
+        self.terminal_frame = TerminalFrame(self, self.db_conn)
+        self.terminal_frame.grid(row=1, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
 
-class TerminalFrame(tk.Frame):
-    def __init__(self, root: tk.Tk):
-        super().__init__(root)
+    def __footer__(self):
+        self.footer_frame = tk.Frame(self)
+        self.footer_frame.grid(row=2, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
 
-        self.__terminal_input__()
-        self.__terminal_output__()
+        info = tk.Label(self.footer_frame, text="connected to: 127.0.0.1:8080    |\
+                        db server: postres    |    last query: 0ms    |    example info")
+        info.pack()
 
-    def __terminal_input__(self):
-        label = tk.Label(self, text=">>>")
-        label.grid(row=1, column=0)
+    def execute_sql(self, data: str):
+        cursor = self.db_conn.cursor()
 
-        entry = tk.Entry(self)
-        entry.grid(row=1, column=1, sticky=tk.W+tk.E+tk.N+tk.S)
+        try:
+            cursor.execute(data)
+            data = cursor.fetchall()
 
-    def __terminal_output__(self):
-        terminal_output = tk.Text(self)
-        terminal_output.grid(row=0, column=0, columnspan=2,
-                             sticky=tk.W+tk.E+tk.N+tk.S)
+            self.terminal_frame.terminal.insert(tk.END, data)
+        except psycopg2.Error as e:
+            self.terminal_frame.terminal.insert(tk.END, e)
+        finally:
+            self.terminal_frame.terminal.insert(tk.END, os.linesep)
+            self.terminal_frame.terminal.insert(tk.END, os.linesep)
 
+            cursor.close()
+            self.db_conn.commit()
 
-def sql_editor(root: tk.Tk):
-    frame = SqlEditorFrame(root)
-    frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+    def run_all_sql(self, event: 'tk.Event'):
+        data = self.sql_editor_frame.textarea_data()
+        self.execute_sql(data)
+
+    def run_selected_sql(self, event: 'tk.Event'):
+        data = self.sql_editor_frame.textarea.selection_get()
+        self.execute_sql(data)
 
 
-def terminal(root: tk.Tk):
-    frame = TerminalFrame(root)
-    frame.grid(row=1, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
-
-
-def footer(root: tk.Tk):
-    frame = tk.Frame(root)
-    frame.grid(row=2, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
-
-    info = tk.Label(frame, text="connected to: 127.0.0.1:8080    |\
-    db server: postres    |    last query: 0ms    |    example info")
-    info.pack()
-
-
-root = tk.Tk()
-
-sql_editor(root)
-terminal(root)
-footer(root)
-
-root.mainloop()
+app = App()
+app.mainloop()

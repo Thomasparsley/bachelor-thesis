@@ -1,1 +1,2 @@
 https://github.com/andialbrecht/sqlparse
+https://www.psycopg.org/docs/install.html

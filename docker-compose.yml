@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  database:
+    container_name: bachelor-database
+    image: postgres:alpine
+    expose:
+      - "5432"
+    ports:
+      - 5432:5432
+    volumes:
+      -  ./database-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: 'bachelor'
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'root'
+    deploy:
+      replicas: 1
+      placement:
+        max_replicas_per_node: 2
+    restart: always
