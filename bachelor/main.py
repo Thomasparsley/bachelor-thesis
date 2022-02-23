@@ -5,60 +5,81 @@ import sqlparse
 from sql import highlighter
 
 
-def sql_editor(root: tk.Tk):
-    # Likes like spaghetti code :(
-    frame = tk.Frame(root)
-    frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+class ButtonList(tk.Frame):
+    def __init__(self, root: tk.Tk,  side, buttons: list):
+        super().__init__(root)
 
-    buttons_frame = tk.Frame(frame)
-    buttons_frame.pack(side=tk.LEFT, anchor=tk.N)
+        for button in buttons:
+            btn = tk.Button(self,
+                            text=button["text"], command=button["command"])
+            btn.pack(side=side)
 
-    textarea = tk.Text(frame)
-    textarea.bind("<KeyRelease>",
-                  lambda e: highlighter.highlight(textarea))
-    textarea.pack(side=tk.RIGHT)
 
-    # Format function for format button
-    def format(widget: tk.Text) -> None:
+class SqlEditorFrame(tk.Frame):
+    def __init__(self, root: tk.Tk):
+        super().__init__(root)
+
+        self.textarea_frame()
+
+        buttons_data = [
+            {
+                "text": "Run All",
+                "command": lambda: None,
+            },
+            {
+                "text": "Format",
+                "command": lambda: format(self.textarea),
+            }
+        ]
+
+        self.buttons = ButtonList(self, tk.TOP, buttons_data)
+        self.buttons.pack(side=tk.LEFT, anchor=tk.N)
+
+    def textarea_frame(self):
+        self.textarea = tk.Text(self)
+        self.textarea.bind("<KeyRelease>",
+                           lambda e: highlighter.highlight(self.textarea))
+        self.textarea.pack(side=tk.RIGHT)
+
+    def __format__(self, widget: tk.Text):
+        """Format function for format button."""
         temp = widget.get("1.0", tk.END)
         widget.delete("1.0", tk.END)
 
         widget.insert(tk.END,
-                      sqlparse.format(temp,
-                                      reindent=True, keyword_case='upper', use_space_around_operators=True))
+                      sqlparse.format(temp, reindent=True, keyword_case='upper',
+                                      use_space_around_operators=True))
         highlighter.highlight(widget)
 
-    # Change to class?
-    buttons_data = [
-        {
-            "text": "Run All",
-            "command": lambda: None,
-        },
-        {
-            "text": "Format",
-            "command": lambda: format(textarea),
-        }
-    ]
 
-    for data in buttons_data:
-        data = tk.Button(buttons_frame,
-                         text=data["text"], command=data["command"])
-        data.pack(side=tk.TOP)
+class TerminalFrame(tk.Frame):
+    def __init__(self, root: tk.Tk):
+        super().__init__(root)
+
+        self.__terminal_input__()
+        self.__terminal_output__()
+
+    def __terminal_input__(self):
+        label = tk.Label(self, text=">>>")
+        label.grid(row=1, column=0)
+
+        entry = tk.Entry(self)
+        entry.grid(row=1, column=1, sticky=tk.W+tk.E+tk.N+tk.S)
+
+    def __terminal_output__(self):
+        terminal_output = tk.Text(self)
+        terminal_output.grid(row=0, column=0, columnspan=2,
+                             sticky=tk.W+tk.E+tk.N+tk.S)
+
+
+def sql_editor(root: tk.Tk):
+    frame = SqlEditorFrame(root)
+    frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
 
 
 def terminal(root: tk.Tk):
-    frame = tk.Frame(root)
+    frame = TerminalFrame(root)
     frame.grid(row=1, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
-
-    terminal_output = tk.Text(frame)
-    terminal_output.grid(row=0, column=0, columnspan=2,
-                         sticky=tk.W+tk.E+tk.N+tk.S)
-
-    terminal_input_label = tk.Label(frame, text=">>>")
-    terminal_input_label.grid(row=1, column=0)
-
-    terminal_input = tk.Entry(frame)
-    terminal_input.grid(row=1, column=1, sticky=tk.W+tk.E+tk.N+tk.S)
 
 
 def footer(root: tk.Tk):
