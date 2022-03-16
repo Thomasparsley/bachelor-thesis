@@ -10,13 +10,13 @@ class SqlEditorFrame(tk.Frame):
     def __init__(self, root: 'tk.Tk'):
         super().__init__(root)
 
-        self.__textarea__()
+        self._textarea()
         self.__buttons__()
 
     def textarea_data(self) -> str:
         return self.textarea.get("1.0", tk.END)
 
-    def __textarea__(self):
+    def _textarea(self):
         self.textarea = tk.Text(self)
         self.textarea.bind("<KeyRelease>",
                            lambda e: highlighter.highlight(self.textarea))
@@ -34,14 +34,14 @@ class SqlEditorFrame(tk.Frame):
             },
             {
                 "text": "Format",
-                "command": lambda: self.__format__(self.textarea),
+                "command": lambda: self._format(self.textarea),
             }
         ]
 
         self.buttons = ButtonList(self, tk.TOP, buttons_data)
         self.buttons.pack(side=tk.LEFT, anchor=tk.N)
 
-    def __format__(self, widget: 'tk.Text'):
+    def _format(self, widget: 'tk.Text'):
         """Format function for format button."""
         temp = widget.get("1.0", tk.END)
         widget.delete("1.0", tk.END)

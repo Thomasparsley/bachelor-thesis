@@ -17,22 +17,22 @@ class App(tk.Tk):
 
         self.title("Bachelor App")
 
-        self.__sql_editor__()
-        self.__terminal__()
-        self.__footer__()
+        self._sql_editor()
+        self._terminal()
+        self._footer()
 
         self.bind("<<RunAllSql>>", self.run_all_sql)
         self.bind("<<RunSelectedSql>>", self.run_selected_sql)
 
-    def __sql_editor__(self):
+    def _sql_editor(self):
         self.sql_editor_frame = SqlEditorFrame(self)
         self.sql_editor_frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
 
-    def __terminal__(self):
+    def _terminal(self):
         self.terminal_frame = TerminalFrame(self, self.db_conn)
         self.terminal_frame.grid(row=1, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
 
-    def __footer__(self):
+    def _footer(self):
         self.footer_frame = tk.Frame(self)
         self.footer_frame.grid(row=2, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
 
@@ -45,6 +45,7 @@ class App(tk.Tk):
 
         try:
             cursor.execute(data)
+            cursor.description
             data = cursor.fetchall()
 
             self.terminal_frame.terminal.insert(tk.END, data)
