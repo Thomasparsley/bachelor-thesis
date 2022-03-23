@@ -11,7 +11,6 @@ class SqlEditorFrame(tk.Frame):
         super().__init__(root)
 
         self._textarea()
-        self.__buttons__()
 
     def textarea_data(self) -> str:
         return self.textarea.get("1.0", tk.END)
@@ -20,9 +19,9 @@ class SqlEditorFrame(tk.Frame):
         self.textarea = tk.Text(self)
         self.textarea.bind("<KeyRelease>",
                            lambda e: highlighter.highlight(self.textarea))
-        self.textarea.pack(side=tk.RIGHT)
+        self.textarea.pack()
 
-    def __buttons__(self):
+    def _buttons(self):
         buttons_data = [
             {
                 "text": "Run Selected",
