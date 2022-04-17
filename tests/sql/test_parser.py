@@ -1,6 +1,6 @@
 import pytest
 
-from bachelor.sql.enum import SqlSyntaxEnum
+from bachelor.sql.tokens import Token
 from bachelor.sql.region import Region
 from bachelor.sql.parser import parse, is_start_comment, is_end_comment, \
     is_single_line_comment, is_multi_line_comment, is_comment, is_empty_char, \
@@ -22,25 +22,25 @@ parsed_output: list[Region] = parse(input)
     [
         # SELECT
         (1, parsed_output[0],
-            Region(1, 0, 6, SqlSyntaxEnum.KEYWORD)),
+            Region(1, 0, 6, Token.KEYWORD)),
         # FROM
         (2, parsed_output[1],
-            Region(1, 9, 4, SqlSyntaxEnum.KEYWORD)),
+            Region(1, 9, 4, Token.KEYWORD)),
         # WHERE
         (3, parsed_output[2],
-            Region(1, 19, 5, SqlSyntaxEnum.KEYWORD)),
+            Region(1, 19, 5, Token.KEYWORD)),
         # 96
         (4, parsed_output[3],
-            Region(1, 31, 2, SqlSyntaxEnum.NUMBER)),
+            Region(1, 31, 2, Token.NUMBER)),
         # /* */
         (5, parsed_output[4],
-            Region(2, 0, 24, SqlSyntaxEnum.COMMENT)),
+            Region(2, 0, 24, Token.COMMENT)),
         # --
         (6, parsed_output[5],
-            Region(5, 0, 23, SqlSyntaxEnum.COMMENT)),
+            Region(5, 0, 23, Token.COMMENT)),
         # Key --
         (7, parsed_output[6],
-            Region(6, 17, 9, SqlSyntaxEnum.COMMENT)),
+            Region(6, 17, 9, Token.COMMENT)),
     ],
 )
 def test_parser(id, test_input: Region, expected_output: Region):
@@ -54,11 +54,11 @@ def test_parser(id, test_input: Region, expected_output: Region):
     "id,test_input,expected_output",
     [
         # is_start_comment
-        (0, is_start_comment("--"), True),
-        (1, is_start_comment("/*"), True),
+        (0, is_start_comment("--"),    True),
+        (1, is_start_comment("/*"),    True),
         (2, is_start_comment("/* --"), False),
         (3, is_start_comment("-- /*"), False),
-        (4, is_start_comment("*/"), False),
+        (4, is_start_comment("*/"),    False),
 
         # is_end_comment
         (5, is_end_comment("*/"), True),
@@ -66,27 +66,27 @@ def test_parser(id, test_input: Region, expected_output: Region):
         (7, is_end_comment("--"), False),
 
         # is_single_line_comment
-        (8, is_single_line_comment("--\n"), True),
-        (9, is_single_line_comment("--"), False),
-        (10, is_single_line_comment("/*"), False),
-        (11, is_single_line_comment("/* --\n"), False),
-        (12, is_single_line_comment("-- /*\n"), True),
+        (8,  is_single_line_comment("--\n"),                       True),
+        (9,  is_single_line_comment("--"),                         False),
+        (10, is_single_line_comment("/*"),                         False),
+        (11, is_single_line_comment("/* --\n"),                    False),
+        (12, is_single_line_comment("-- /*\n"),                    True),
         (13, is_single_line_comment("--Single Line Comment /*\n"), True),
 
         # is_multi_line_comment
         (14, is_multi_line_comment("/* Multi Line Comment */"), True),
-        (15, is_multi_line_comment("/*"), False),
-        (16, is_multi_line_comment("/* --"), False),
-        (17, is_multi_line_comment("-- /*"), False),
+        (15, is_multi_line_comment("/*"),                       False),
+        (16, is_multi_line_comment("/* --"),                    False),
+        (17, is_multi_line_comment("-- /*"),                    False),
 
         # is_comment
-        (18, is_comment("--\n"), True),
+        (18, is_comment("--\n"),                        True),
         (19, is_comment("-- Is Single Line Comment\n"), True),
         (20, is_comment("/* Is Multi Line Comment */"), True),
-        (21, is_comment("/*"), False),
-        (22, is_comment("/* --"), False),
-        (23, is_comment("-- /*"), False),
-        (24, is_comment("-- Is Single Line Comment"), False),
+        (21, is_comment("/*"),                          False),
+        (22, is_comment("/* --"),                       False),
+        (23, is_comment("-- /*"),                       False),
+        (24, is_comment("-- Is Single Line Comment"),   False),
     ],
 )
 def test_comments(id, test_input: bool, expected_output: bool):

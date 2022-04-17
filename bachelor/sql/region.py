@@ -1,8 +1,9 @@
-from .enum import SqlSyntaxEnum
+from .tokens import Token
 
 
 class Region():
-    """Represent a region of text for highlighting
+    """
+    Represent a region of text for highlighting
 
     Attributes:
         start_line (int): The line number of the start of the region.
@@ -15,9 +16,15 @@ class Region():
         end: Returns the end of the region as a string.
     """
 
-    def __init__(self, start_line: int, start_char: int, region_len: int,
-                 type: SqlSyntaxEnum):
-        """Initialize a new Region object.
+    def __init__(
+        self,
+        start_line: int,
+        start_char: int,
+        region_len: int,
+        type: Token,
+    ):
+        """
+        Initialize a new Region object.
 
         Args:
             start_line (int): The line number of the start of the region.
@@ -43,7 +50,8 @@ class Region():
         self.type = type
 
     def start(self) -> str:
-        """Returns the start of the region as a string.
+        """
+        Returns the start of the region as a string.
 
         Returns:
             str: The start of the region as a string.
@@ -60,7 +68,8 @@ class Region():
         return f"{self.start_line}.{self.start_char}"
 
     def end(self) -> str:
-        """Returns the end of the region as a string.
+        """
+        Returns the end of the region as a string.
 
         Returns:
             str: The end of the region as a string.
@@ -86,8 +95,9 @@ class Region():
         raise TypeError("Cannot compare Region to other type")
 
     @staticmethod
-    def make_tag(type: SqlSyntaxEnum) -> str:
-        """Returns the tag for the given type.
+    def make_tag(type: Token) -> str:
+        """
+        Returns the tag for the given type.
 
         Args:
             type (enum.SqlSyntaxEnum): The type of the region.
@@ -105,7 +115,8 @@ class Region():
         return f"region_{type.name.lower()}"
 
     def tag(self) -> str:
-        """Returns the name of the tag to use for the region.
+        """
+        Returns the name of the tag to use for the region.
 
         Returns:
             str: The name of the tag to use for the region.

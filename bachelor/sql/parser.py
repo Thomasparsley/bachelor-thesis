@@ -1,5 +1,7 @@
+from typing import List
+
 from .region import Region
-from .enum import SqlSyntaxEnum
+from .tokens import Token
 from .keywords import KEYWORDS
 
 NEW_LINES = ["\n", "\r\n"]
@@ -10,7 +12,8 @@ END_COMMENT = ["*/"]
 
 
 def is_start_comment(input: str) -> bool:
-    """Returns whether the given input is a start comment.
+    """
+    Returns whether the given input is a start comment.
 
     Args:
         input (str): The input to check.
@@ -35,7 +38,8 @@ def is_start_comment(input: str) -> bool:
 
 
 def is_end_comment(input: str) -> bool:
-    """Returns whether the given input is an end comment.
+    """
+    Returns whether the given input is an end comment.
 
     Args:
         input (str): The input to check.
@@ -57,7 +61,8 @@ def is_end_comment(input: str) -> bool:
 
 
 def is_single_line_comment(input: str) -> bool:
-    """Returns whether the given input is a single line comment.
+    """
+    Returns whether the given input is a single line comment.
 
     Args:
         input (str): The input to check.
@@ -66,7 +71,7 @@ def is_single_line_comment(input: str) -> bool:
         bool: Whether the given input is a single line comment.
 
     Examples:
-        >>> is_single_line_comment("--\n")
+        >>> is_single_line_comment("--\\n")
         True
 
         >>> is_single_line_comment("--")
@@ -75,21 +80,21 @@ def is_single_line_comment(input: str) -> bool:
         >>> is_single_line_comment("/*")
         False
 
-        >>> is_single_line_comment("/* --\n")
+        >>> is_single_line_comment("/* --\\n")
         False
 
-        >>> is_single_line_comment("-- /*\n")
+        >>> is_single_line_comment("-- /*\\n")
         True
 
-        >>> is_single_line_comment("--Single Line Comment /*\n")
+        >>> is_single_line_comment("--Single Line Comment /*\\n")
         True
     """
-
     return input[0:2] == START_COMMENT[0] and is_new_line(input[len(input) - 1])
 
 
 def is_multi_line_comment(input: str) -> bool:
-    """Returns whether the given input is a multi line comment.
+    """
+    Returns whether the given input is a multi line comment.
 
     Args:
         input (str): The input to check.
@@ -99,7 +104,7 @@ def is_multi_line_comment(input: str) -> bool:
 
     Examples:
         >>> is_multi_line_comment("/* Multi Line Comment */")
-        true
+        True
 
         >>> is_multi_line_comment("/*")
         False
@@ -115,7 +120,8 @@ def is_multi_line_comment(input: str) -> bool:
 
 
 def is_comment(input: str) -> bool:
-    """Returns whether the given input is a comment.
+    """
+    Returns whether the given input is a comment.
 
     Args:
         input (str): The input to check.
@@ -124,10 +130,10 @@ def is_comment(input: str) -> bool:
         bool: Whether the given input is a comment.
 
     Examples:
-        >>> is_comment("--\n")
+        >>> is_comment("--\\n")
         True
 
-        >>> is_comment("-- Is Single Line Comment\n")
+        >>> is_comment("-- Is Single Line Comment\\n")
         True
 
         >>> is_comment("/* Is Multi Line Comment */")
@@ -146,7 +152,8 @@ def is_comment(input: str) -> bool:
 
 
 def is_new_line(input: str) -> bool:
-    """Returns whether the given input is a new line.
+    """
+    Returns whether the given input is a new line.
 
     Args:
         input (str): The input to check.
@@ -155,26 +162,27 @@ def is_new_line(input: str) -> bool:
         bool: Whether the given input is a new line.
 
     Examples:
-        >>> is_new_line("\n")
+        >>> is_new_line("\\n")
         True
 
-        >>> is_new_line("\r\n")
+        >>> is_new_line("\\r\\n")
         True
 
-        >>> is_new_line("\r")
+        >>> is_new_line("\\r")
         False
 
-        >>> is_new_line("\n\r")
+        >>> is_new_line("\\n\\r")
         False
 
-        >>> is_new_line("\r\n\n")
+        >>> is_new_line("\\r\\n\\n")
         False
     """
     return input in NEW_LINES
 
 
 def is_empty_char(input: str) -> bool:
-    """Returns whether the given input is an empty char.
+    """
+    Returns whether the given input is an empty char.
 
     Args:
         input (str): The input to check.
@@ -186,7 +194,8 @@ def is_empty_char(input: str) -> bool:
 
 
 def is_number(input: str) -> bool:
-    """Returns whether the given input is a number.
+    """
+    Returns whether the given input is a number.
 
     Args:
         input (str): The input to check.
@@ -215,7 +224,8 @@ def is_number(input: str) -> bool:
 
 
 def is_keyword(input: str) -> bool:
-    """Returns whether the given input is a SQL keyword.
+    """
+    Returns whether the given input is a SQL keyword.
 
     Args:
         input (str): The input to check.
@@ -234,7 +244,8 @@ def is_keyword(input: str) -> bool:
 
 
 def is_string(input: str) -> bool:
-    """Returns whether the given input is a string.
+    """
+    Returns whether the given input is a string.
 
     Args:
         input (str): The input to check.
@@ -266,8 +277,9 @@ def is_string(input: str) -> bool:
     return input[0] == "'" and input[len(input) - 1] == "'"
 
 
-def parse(text: str) -> list[Region]:
-    """Parses the given text and returns a list of regions for highlighting.
+def parse(text: str) -> List["Region"]:
+    """
+    Parses the given text and returns a list of regions for highlighting.
 
     Args:
         text (str): The text to parse.
@@ -279,8 +291,8 @@ def parse(text: str) -> list[Region]:
         >>> parse("SELECT * FROM table; -- Comment")
         [<Region object at ...>, <Region object at ...>, <Region object at ...>]
     """
-    next_region: Region = None
-    regions: list[Region] = []
+    next_region: "Region" = None
+    regions: List["Region"] = []
 
     buff = ""
     comment_buff = ""
@@ -312,7 +324,7 @@ def parse(text: str) -> list[Region]:
         # region Comments
         if is_start_comment(text[idx-1:idx+1]) and comment_buff == "":
             next_region = Region(n_of_lines, n_of_chars-2,
-                                 len(comment_buff), SqlSyntaxEnum.COMMENT)
+                                 len(comment_buff), Token.COMMENT)
             comment_buff += text[idx-1:idx+1]
             buff = ""
 
@@ -335,21 +347,21 @@ def parse(text: str) -> list[Region]:
         if not is_empty_char(text[idx]) and is_empty_char(text[idx+1]):
             if is_number(buff):
                 regions.append(Region(n_of_lines, n_of_chars-len(buff),
-                                      len(buff), SqlSyntaxEnum.NUMBER))
+                                      len(buff), Token.NUMBER))
                 buff = ""
                 idx += 1
                 continue
 
             if is_string(buff):
                 regions.append(Region(n_of_lines, n_of_chars-len(buff),
-                                      len(buff), SqlSyntaxEnum.STRING))
+                                      len(buff), Token.STRING))
                 buff = ""
                 idx += 1
                 continue
 
             if is_keyword(buff):
                 regions.append(Region(n_of_lines, n_of_chars-len(buff),
-                                      len(buff), SqlSyntaxEnum.KEYWORD))
+                                      len(buff), Token.KEYWORD))
                 buff = ""
                 idx += 1
                 continue

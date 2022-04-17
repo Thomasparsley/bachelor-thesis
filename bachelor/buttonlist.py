@@ -1,8 +1,15 @@
 import tkinter as tk
 
+from typing import List
+
 
 class ButtonList(tk.Frame):
-    def __init__(self, root: 'tk.Tk',  side, buttons: 'list'):
+    def __init__(
+        self,
+        root: "tk.Tk", 
+        side,
+        buttons: "List",
+    ):
         super().__init__(root)
 
         for button in buttons:
