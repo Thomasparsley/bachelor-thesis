@@ -16,7 +16,8 @@ class EditorWindow:
 
         self.textpeer = TextPeer(self.window, editor_master)
 
-        self.editor = Editor(self.window, self.textpeer)
+        self.editor = Editor(self.window)
+        self.editor.set_peer(editor_master)
         self.editor.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
         paned_window.add(self.editor)  # type: ignore
 
