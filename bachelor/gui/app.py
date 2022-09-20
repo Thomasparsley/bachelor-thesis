@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from .frames.repl import REPLFrame
 from .frames.editor import EditorFrame
 from .windows.editor import EditorWindow
 
@@ -21,7 +22,8 @@ class App(tk.Tk):
 
         self.paned_window = tk.PanedWindow(orient=tk.VERTICAL)
 
-        self._sql_editor_init()
+        self._editor_init()
+        self._repl_init()
 
         self.paned_window.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
 
@@ -52,10 +54,15 @@ class App(tk.Tk):
 
         self._main_menu_bar.add_cascade(label="Windows", menu=windows)
 
-    def _sql_editor_init(self) -> None:
+    def _editor_init(self) -> None:
         self._editor_frame = EditorFrame(self)
         self._editor_frame.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
         self.paned_window.add(self._editor_frame)  # type: ignore
+
+    def _repl_init(self) -> None:
+        self._repl_frame = REPLFrame(self)
+        self._repl_frame.grid(row=0, column=1, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.paned_window.add(self._repl_frame)  # type: ignore
 
     def _duplicate_editor(self):
         EditorWindow(self, self._editor_frame.text)

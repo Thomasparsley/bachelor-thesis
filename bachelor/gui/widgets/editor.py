@@ -5,7 +5,7 @@ from ..widgets.textpeer import TextPeer
 
 class Editor(tk.Frame):
     def __init__(self, root: tk.Tk | tk.Toplevel):
-        super().__init__(root, highlightbackground="blue", highlightthickness=1)
+        super().__init__(root)
 
         self.paned_window = tk.PanedWindow(self, orient=tk.VERTICAL)
 
