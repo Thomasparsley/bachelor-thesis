@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from .frames.repl import REPLFrame
-from .frames.editor import EditorFrame
+from .frames.repl import REPL
+from .frames.editor import Editor
 from .windows.editor import EditorWindow
 
 
@@ -55,14 +55,14 @@ class App(tk.Tk):
         self._main_menu_bar.add_cascade(label="Windows", menu=windows)
 
     def _editor_init(self) -> None:
-        self._editor_frame = EditorFrame(self)
-        self._editor_frame.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
-        self.paned_window.add(self._editor_frame)  # type: ignore
+        self._editor = Editor(self)
+        self._editor.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.paned_window.add(self._editor)  # type: ignore
 
     def _repl_init(self) -> None:
-        self._repl_frame = REPLFrame(self)
-        self._repl_frame.grid(row=0, column=1, sticky=tk.W + tk.E + tk.N + tk.S)
-        self.paned_window.add(self._repl_frame)  # type: ignore
+        self._repl = REPL(self)
+        self._repl.grid(row=1, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.paned_window.add(self._repl)  # type: ignore
 
     def _duplicate_editor(self):
-        EditorWindow(self, self._editor_frame.text)
+        EditorWindow(self, self._editor.text)

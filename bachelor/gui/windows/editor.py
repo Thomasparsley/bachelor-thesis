@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ..widgets.editor import Editor
+from ..frames.editor import Editor
 from ..widgets.textpeer import TextPeer
 
 
