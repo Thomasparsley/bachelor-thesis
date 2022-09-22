@@ -18,19 +18,30 @@ class REPL(Editor):
 
     # Todo: Je potřeba kontrolovat i označený region
     def content_protection(self, event: Any = None):
-        keysym = event.keysym
+        keysym: str = event.keysym
 
         # Pokud zmáčknutá klávesa je na pohyb v textu, vždy povolit
         if keysym in ["Left", "Right", "Up", "Down"]:
             return
 
-        if self.cursor_index <= self.cursor_stop_index:
+        cursor_index = self.cursor_index
+        cursor_stop_index = self.cursor_stop_index
+        if cursor_index <= cursor_stop_index:
             if keysym in ["BackSpace"]:
                 return "break"
 
         # Pokud zmáčknutá klávesa je dále než stop_cursor, povolit
-        if self.cursor_index < self.cursor_stop_index:
+        if cursor_index < cursor_stop_index:
             return "break"
+
+        try:
+            select_start = Index.from_str(self.text.index("sel.first"))
+            select_end = Index.from_str(self.text.index("sel.last"))
+
+            if select_start <= cursor_stop_index or select_end <= cursor_stop_index:
+                return "break"
+        except tk.TclError:
+            pass
 
         return
 
