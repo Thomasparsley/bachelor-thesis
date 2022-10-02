@@ -16,7 +16,6 @@ class REPL(Editor):
         self.add_keypress_event(self.content_protection)
         self.add_keyrelease_event(self.content_exec)
 
-    # Todo: Je potřeba kontrolovat i označený region
     def content_protection(self, event: Any = None):
         keysym: str = event.keysym
 

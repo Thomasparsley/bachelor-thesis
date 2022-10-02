@@ -38,7 +38,11 @@ class Editor(tk.Frame):
 
     def set_peer(self, master: tk.Text):
         self.text.destroy()
+
         self.text = TextPeer(self, master)
+        self.text.bind("<KeyPress>", self._text_keypress_events_caller)
+        self.text.bind("<KeyRelease>", self._text_keyrelease_events_caller)
+
         self._layout_init()
 
     def add_keypress_event(self, event: Callable[[Any], Any]):

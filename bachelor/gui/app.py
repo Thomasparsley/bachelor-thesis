@@ -2,7 +2,7 @@ import tkinter as tk
 
 from .frames.repl import REPL
 from .frames.editor import Editor
-from .windows.editor import EditorWindow
+from .windows import EditorWindow, REPLWindow
 
 
 class App(tk.Tk):
@@ -50,7 +50,7 @@ class App(tk.Tk):
         # Windows
         windows = tk.Menu(self._main_menu_bar, tearoff=0)
         windows.add_command(label="Duplicate editor", command=self._duplicate_editor)
-        windows.add_command(label="Duplicate terminal")
+        windows.add_command(label="Duplicate repl", command=self._duplicate_repl)
 
         self._main_menu_bar.add_cascade(label="Windows", menu=windows)
 
@@ -66,3 +66,6 @@ class App(tk.Tk):
 
     def _duplicate_editor(self):
         EditorWindow(self, self._editor.text)
+
+    def _duplicate_repl(self):
+        REPLWindow(self, self._repl.text)
