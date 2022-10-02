@@ -1,21 +1,23 @@
-import tkinter as tk
-import psycopg2
 import os
+import tkinter as tk
+from typing import Any
+
+# import psycopg2
 
 from editor import EditorFrame
 from terminal import TerminalFrame
 
 
 class Window(tk.Tk):
-
     def __init__(self):
         super().__init__()
 
-        self.db_conn: psycopg2.connection = None
+        self.db_conn: None = None
 
-        if False:
-            self.db_conn = psycopg2.connect(
-                "host=localhost dbname=bachelor user=root password=root")
+        if self.db_conn:
+            pass
+            # self.db_conn = psycopg2.connect(
+            #    "host=localhost dbname=bachelor user=root password=root")
 
         self.title("Bachelor App")
 
@@ -28,7 +30,7 @@ class Window(tk.Tk):
         self._terminal()
         self._footer()
 
-        self.paned_window.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+        self.paned_window.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
 
         self.bind("<<RunAllSql>>", self.run_all_sql)
         self.bind("<<RunSelectedSql>>", self.run_selected_sql)
@@ -39,20 +41,22 @@ class Window(tk.Tk):
 
     def _sql_editor(self):
         self.editor_frame = EditorFrame(self)
-        self.editor_frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
-        self.paned_window.add(self.editor_frame)
+        self.editor_frame.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.paned_window.add(self.editor_frame)  # type: ignore
 
     def _terminal(self):
-        self.terminal_frame = TerminalFrame(self, self.db_conn)
-        self.terminal_frame.grid(row=1, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
-        self.paned_window.add(self.terminal_frame)
+        self.terminal_frame = TerminalFrame(self, self.db_conn)  # type: ignore
+        self.terminal_frame.grid(row=1, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.paned_window.add(self.terminal_frame)  # type: ignore
 
     def _footer(self):
         self.footer_frame = tk.Frame(self)
-        self.footer_frame.grid(row=1, column=0, sticky=tk.W+tk.E)
+        self.footer_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
 
-        info = tk.Label(self.footer_frame,
-                        text="connected to: 127.0.0.1:8080    |    db server: postres    |    last query: 0ms    |    example info")
+        info = tk.Label(
+            self.footer_frame,
+            text="connected to: 127.0.0.1:8080    |    db server: postres    |    last query: 0ms    |    example info",
+        )
         info.pack()
 
     def _main_menu(self):
@@ -60,17 +64,14 @@ class Window(tk.Tk):
 
         # File menu
         file_menu = tk.Menu(self.main_menu_bar, tearoff=0)
-        file_menu.add_command(
-            label="Novy",        accelerator="Ctrl+N", underline=1)
-        file_menu.add_command(
-            label="Otevrit",     accelerator="Ctrl+O", underline=1)
-        file_menu.add_command(label="Ulozit",      accelerator="Ctrl+S")
+        file_menu.add_command(label="Novy", accelerator="Ctrl+N", underline=1)
+        file_menu.add_command(label="Otevrit", accelerator="Ctrl+O", underline=1)
+        file_menu.add_command(label="Ulozit", accelerator="Ctrl+S")
         file_menu.add_command(label="Ulozit jako", accelerator="Ctrl+Shift+S")
 
         file_menu.add_separator()
 
-        file_menu.add_command(
-            label="Ukoncit", command=self.quit, accelerator="Ctrl+Q")
+        file_menu.add_command(label="Ukoncit", command=self.quit, accelerator="Ctrl+Q")
 
         self.main_menu_bar.add_cascade(label="Soubor", menu=file_menu)
 
@@ -90,6 +91,7 @@ class Window(tk.Tk):
         pass
 
     def execute_sql(self, data: str):
+        return
         cursor = self.db_conn.cursor()
 
         try:
@@ -107,10 +109,10 @@ class Window(tk.Tk):
             cursor.close()
             self.db_conn.commit()
 
-    def run_all_sql(self, _: "tk.Event"):
+    def run_all_sql(self, _: "tk.Event[Any]"):
         data = self.editor_frame.textarea_data()
         self.execute_sql(data)
 
-    def run_selected_sql(self, _: "tk.Event"):
-        data = self.editor_frame.textarea.selection_get()
+    def run_selected_sql(self, _: "tk.Event[Any]"):
+        data: str = self.editor_frame.textarea.selection_get()  # type: ignore
         self.execute_sql(data)
