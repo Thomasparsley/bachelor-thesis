@@ -40,18 +40,25 @@ class App(tk.Tk):
         file_menu.add_command(label="Otevrit", accelerator="Ctrl+O", underline=1)
         file_menu.add_command(label="Ulozit", accelerator="Ctrl+S")
         file_menu.add_command(label="Ulozit jako", accelerator="Ctrl+Shift+S")
-
         file_menu.add_separator()
-
         file_menu.add_command(label="Ukoncit", command=self.quit, accelerator="Ctrl+Q")
 
-        self._main_menu_bar.add_cascade(label="Soubor", menu=file_menu)
+        ###############
+        # SQL Menu
+        sql_menu = tk.Menu(self._main_menu_bar, tearoff=0)
+        sql_menu.add_command(label="Spustit vše")
+        sql_menu.add_command(label="Spustit vybrané")
+        sql_menu.add_separator()
+        sql_menu.add_command(label="Formátovat", command=self._format_editor)
 
-        # Windows
+        ###############
+        # Windows Menu
         windows = tk.Menu(self._main_menu_bar, tearoff=0)
         windows.add_command(label="Duplicate editor", command=self._duplicate_editor)
         windows.add_command(label="Duplicate repl", command=self._duplicate_repl)
 
+        self._main_menu_bar.add_cascade(label="Soubor", menu=file_menu)
+        self._main_menu_bar.add_cascade(label="SQL", menu=sql_menu)
         self._main_menu_bar.add_cascade(label="Windows", menu=windows)
 
     def _editor_init(self) -> None:
@@ -69,3 +76,6 @@ class App(tk.Tk):
 
     def _duplicate_repl(self):
         REPLWindow(self, self._repl.text)
+
+    def _format_editor(self):
+        self._editor.format()

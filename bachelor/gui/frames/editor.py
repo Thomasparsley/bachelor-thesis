@@ -1,8 +1,10 @@
 from typing import Any, Callable
 
 import tkinter as tk
+from sqlparse import format as sql_format  #   type: ignore
 
 from ..utils.index import Index
+from ..utils.events import events_caller
 from ..widgets.textpeer import TextPeer
 
 
@@ -10,24 +12,35 @@ class Editor(tk.Frame):
     def __init__(self, root: tk.Tk | tk.Toplevel):
         super().__init__(root)
 
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-
-        self.var = tk.StringVar()
-        self.text = tk.Text(self)
-        self.text.bind("<KeyPress>", self._text_keypress_events_caller)
-        self.text.bind("<KeyRelease>", self._text_keyrelease_events_caller)
-
         self._keypress_events: list[Callable[[Any], Any]] = []
         self._keyrelease_events: list[Callable[[Any], Any]] = []
 
-        # self.textarea.bind(
-        #    "<KeyRelease>", lambda e: highlighter.highlight(self.textarea)
-        # )
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+
+        self.text = tk.Text(self)
+        self._bind_events()
+
         self._layout_init()
 
     def _layout_init(self):
         self.text.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+
+    def _bind_events(self):
+        self.text.bind("<KeyPress>", self._keypress_events_caller)
+        self.text.bind("<KeyRelease>", self._keyrelease_events_caller)
+
+    def add_keypress_event(self, event: Callable[[Any], Any]):
+        self._keypress_events.append(event)
+
+    def _keypress_events_caller(self, event: Any = None):
+        return events_caller(self._keypress_events, event)
+
+    def add_keyrelease_event(self, event: Callable[[Any], Any]):
+        self._keyrelease_events.append(event)
+
+    def _keyrelease_events_caller(self, event: Any = None):
+        return events_caller(self._keyrelease_events, event)
 
     @property
     def cursor_index(self):
@@ -38,51 +51,20 @@ class Editor(tk.Frame):
 
     def set_peer(self, master: tk.Text):
         self.text.destroy()
-
         self.text = TextPeer(self, master)
-        self.text.bind("<KeyPress>", self._text_keypress_events_caller)
-        self.text.bind("<KeyRelease>", self._text_keyrelease_events_caller)
-
+        self._bind_events()
         self._layout_init()
 
-    def add_keypress_event(self, event: Callable[[Any], Any]):
-        self._keypress_events.append(event)
+    def format(self):
+        tmp = self.text.get("1.0", tk.END)
+        self.text.delete("1.0", tk.END)
 
-    def add_keyrelease_event(self, event: Callable[[Any], Any]):
-        self._keyrelease_events.append(event)
-
-    def _text_keypress_events_caller(self, event: Any = None):
-        for e in self._keypress_events:
-            result = e(event)
-            if result == "break":
-                return result
-
-        return None
-
-    def _text_keyrelease_events_caller(self, event: Any = None):
-        for e in self._keyrelease_events:
-            result = e(event)
-            if result == "break":
-                return result
-
-        return None
-
-
-class EditorFrame(Editor):
-    def _format(self, widget: "tk.Text"):
-        """
-        Format function for format button.
-        """
-        temp = widget.get("1.0", tk.END)
-        widget.delete("1.0", tk.END)
-
-        widget.insert(
+        self.text.insert(
             tk.END,
-            sqlparse.format(  # type: ignore
-                temp,
+            sql_format(
+                tmp,
                 reindent=True,
                 keyword_case="upper",
                 use_space_around_operators=True,
             ),
         )
-        # highlighter.highlight(widget)
