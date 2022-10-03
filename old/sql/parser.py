@@ -116,7 +116,7 @@ def is_multi_line_comment(input: str) -> bool:
         False
     """
     l = len(input)
-    return is_start_comment(input[0:2]) and is_end_comment(input[l-2:l])
+    return is_start_comment(input[0:2]) and is_end_comment(input[l - 2 : l])
 
 
 def is_comment(input: str) -> bool:
@@ -220,7 +220,9 @@ def is_number(input: str) -> bool:
         if isinstance(float(input), float):
             return True
     except:
-        return False
+        pass
+
+    return False
 
 
 def is_keyword(input: str) -> bool:
@@ -322,10 +324,11 @@ def parse(text: str) -> List["Region"]:
                 continue
 
         # region Comments
-        if is_start_comment(text[idx-1:idx+1]) and comment_buff == "":
-            next_region = Region(n_of_lines, n_of_chars-2,
-                                 len(comment_buff), Token.COMMENT)
-            comment_buff += text[idx-1:idx+1]
+        if is_start_comment(text[idx - 1 : idx + 1]) and comment_buff == "":
+            next_region = Region(
+                n_of_lines, n_of_chars - 2, len(comment_buff), Token.COMMENT
+            )
+            comment_buff += text[idx - 1 : idx + 1]
             buff = ""
 
             idx += 1
@@ -344,24 +347,27 @@ def parse(text: str) -> List["Region"]:
                 continue
         # endregion
 
-        if not is_empty_char(text[idx]) and is_empty_char(text[idx+1]):
+        if not is_empty_char(text[idx]) and is_empty_char(text[idx + 1]):
             if is_number(buff):
-                regions.append(Region(n_of_lines, n_of_chars-len(buff),
-                                      len(buff), Token.NUMBER))
+                regions.append(
+                    Region(n_of_lines, n_of_chars - len(buff), len(buff), Token.NUMBER)
+                )
                 buff = ""
                 idx += 1
                 continue
 
             if is_string(buff):
-                regions.append(Region(n_of_lines, n_of_chars-len(buff),
-                                      len(buff), Token.STRING))
+                regions.append(
+                    Region(n_of_lines, n_of_chars - len(buff), len(buff), Token.STRING)
+                )
                 buff = ""
                 idx += 1
                 continue
 
             if is_keyword(buff):
-                regions.append(Region(n_of_lines, n_of_chars-len(buff),
-                                      len(buff), Token.KEYWORD))
+                regions.append(
+                    Region(n_of_lines, n_of_chars - len(buff), len(buff), Token.KEYWORD)
+                )
                 buff = ""
                 idx += 1
                 continue
