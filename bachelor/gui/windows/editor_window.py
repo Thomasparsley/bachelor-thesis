@@ -1,18 +1,16 @@
-from typing import Any
-
 import tkinter as tk
 
+from .window import Window
 from ..frames.editor import Editor
 from ..widgets.textpeer import TextPeer
 
 
-class EditorWindow:
-    def __init__(self, root: tk.Misc, editor_master: tk.Text):
-        self.window = tk.Toplevel(root)
-        self.window.title("Duplicated editor")
+class EditorWindow(Window):
 
-        self.window.rowconfigure(0, weight=1)
-        self.window.columnconfigure(0, weight=1)
+    window_title: str = "Duplicated editor"
+
+    def __init__(self, root: tk.Misc, editor_master: tk.Text):
+        super().__init__(root)
 
         self.textpeer = TextPeer(self.window, editor_master)
 
@@ -20,22 +18,19 @@ class EditorWindow:
         self.editor.set_peer(editor_master)
         self.editor.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
 
-        self._main_menu(root)
+    def main_menu_layout(self):
+        menu = tk.Menu(self.window)
 
-    def _main_menu(self, root: tk.Misc):
-        def set_menu(event: Any):
-            menu = tk.Menu(self.window)
+        ###############
+        # SQL Menu
+        sql_menu = tk.Menu(menu, tearoff=0)
+        sql_menu.add_command(label="Spustit vše")
+        sql_menu.add_command(label="Spustit vybrané")
+        sql_menu.add_separator()
+        sql_menu.add_command(label="Formátovat", command=self._format_cmd)
 
-            ###############
-            # SQL Menu
-            sql_menu = tk.Menu(menu, tearoff=0)
-            sql_menu.add_command(label="Spustit vše")
-            sql_menu.add_command(label="Spustit vybrané")
-            sql_menu.add_separator()
-            sql_menu.add_command(label="Formátovat")
+        menu.add_cascade(label="SQL", menu=sql_menu)
+        return menu
 
-            menu.add_cascade(label="SQL", menu=sql_menu)
-
-            root.set_main_menu(menu)  # type: ignore
-
-        self.window.bind("<FocusIn>", set_menu)
+    def _format_cmd(self):
+        self.editor.format()

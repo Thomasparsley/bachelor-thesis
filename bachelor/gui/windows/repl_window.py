@@ -1,16 +1,16 @@
 import tkinter as tk
 
+from .window import Window
 from ..frames.repl import REPL
 from ..widgets.textpeer import TextPeer
 
 
-class REPLWindow:
-    def __init__(self, root: tk.Misc | None, editor_master: tk.Text):
-        self.window = tk.Toplevel(root)
-        self.window.title("Duplicated REPL")
+class REPLWindow(Window):
 
-        self.window.rowconfigure(0, weight=1)
-        self.window.columnconfigure(0, weight=1)
+    window_title: str = "Duplicated REPL"
+
+    def __init__(self, root: tk.Misc, editor_master: tk.Text):
+        super().__init__(root)
 
         self.textpeer = TextPeer(self.window, editor_master)
 
