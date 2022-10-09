@@ -1,5 +1,6 @@
 import tkinter as tk
-from typing import Any
+
+from ..types import StrDict
 
 
 class TextPeer(tk.Text):
@@ -12,8 +13,8 @@ class TextPeer(tk.Text):
         self,
         root: tk.Misc | None,
         master: "tk.Text",
-        cnf: dict[str, Any] = {},
-        **kwargs: dict[str, Any]
+        cnf: StrDict = {},
+        **kwargs: StrDict
     ):
         super().__init__(root, cnf, **kwargs)
         self.destroy()

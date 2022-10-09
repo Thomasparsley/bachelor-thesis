@@ -1,9 +1,11 @@
-from typing import Any, Callable
-
 import tkinter as tk
+from typing import Any
+
 from sqlparse import format as sql_format  #   type: ignore
 
+from ..types import TkEvent
 from ..utils.index import Index
+from ..cons import STICKY_ALL_SIDES
 from ..utils.events import events_caller
 from ..widgets.textpeer import TextPeer
 
@@ -12,8 +14,8 @@ class Editor(tk.Frame):
     def __init__(self, root: tk.Tk | tk.Toplevel):
         super().__init__(root)
 
-        self._keypress_events: list[Callable[[Any], Any]] = []
-        self._keyrelease_events: list[Callable[[Any], Any]] = []
+        self._keypress_events: list[TkEvent] = []
+        self._keyrelease_events: list[TkEvent] = []
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -24,19 +26,19 @@ class Editor(tk.Frame):
         self._layout_init()
 
     def _layout_init(self):
-        self.text.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.text.grid(row=0, column=0, sticky=STICKY_ALL_SIDES)
 
     def _bind_events(self):
         self.text.bind("<KeyPress>", self._keypress_events_caller)
         self.text.bind("<KeyRelease>", self._keyrelease_events_caller)
 
-    def add_keypress_event(self, event: Callable[[Any], Any]):
+    def add_keypress_event(self, event: TkEvent):
         self._keypress_events.append(event)
 
     def _keypress_events_caller(self, event: Any = None):
         return events_caller(self._keypress_events, event)
 
-    def add_keyrelease_event(self, event: Callable[[Any], Any]):
+    def add_keyrelease_event(self, event: TkEvent):
         self._keyrelease_events.append(event)
 
     def _keyrelease_events_caller(self, event: Any = None):

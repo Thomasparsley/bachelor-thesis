@@ -1,8 +1,10 @@
-from typing import Any, Callable
+from typing import Any
+
+from ..types import TkEvent
 
 
 def events_caller(
-    events: list[Callable[[Any], Any]],
+    events: list[TkEvent],
     event: Any = None,
 ):
     for e in events:

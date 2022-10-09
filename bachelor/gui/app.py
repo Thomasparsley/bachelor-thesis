@@ -1,9 +1,11 @@
+import tkinter as tk
 from typing import Any
 
-import tkinter as tk
+from app.db_driver.driver import SqliteDriver
 
 from .frames.repl import REPL
 from .frames.editor import Editor
+from .cons import STICKY_ALL_SIDES
 from .windows import EditorWindow, REPLWindow
 
 
@@ -29,43 +31,45 @@ class App(tk.Tk):
         self._editor_init()
         self._repl_init()
 
-        self.paned_window.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.paned_window.grid(row=0, column=0, sticky=STICKY_ALL_SIDES)
 
         self._main_menu()
 
-    def _main_menu(self):
+    def _main_menu(self) -> None:
         self.set_default_main_menu()
 
     def _editor_init(self) -> None:
         self._editor = Editor(self)
-        self._editor.grid(row=0, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        self._editor.grid(row=0, column=0, sticky=STICKY_ALL_SIDES)
         self.paned_window.add(self._editor)  # type: ignore
 
     def _repl_init(self) -> None:
-        self._repl = REPL(self)
-        self._repl.grid(row=1, column=0, sticky=tk.W + tk.E + tk.N + tk.S)
+        con = SqliteDriver("./test_sqlite_db")
+
+        self._repl = REPL(self, con)
+        self._repl.grid(row=1, column=0, sticky=STICKY_ALL_SIDES)
         self.paned_window.add(self._repl)  # type: ignore
 
-    def _duplicate_editor(self):
+    def _duplicate_editor(self) -> None:
         EditorWindow(self, self._editor.text)
 
-    def _duplicate_repl(self):
+    def _duplicate_repl(self) -> None:
         REPLWindow(self, self._repl.text)
 
-    def _format_editor(self):
+    def _format_editor(self) -> None:
         self._editor.format()
 
-    def set_main_menu(self, menu: tk.Menu):
+    def set_main_menu(self, menu: tk.Menu) -> None:
         if hasattr(self, "_main_menu_bar"):
             self._main_menu_bar.destroy()
 
         self._main_menu_bar = menu
         self.config(menu=self._main_menu_bar)
 
-    def _set_default_main_menu_event(self, event: Any):
+    def _set_default_main_menu_event(self, _: Any) -> None:
         self.set_default_main_menu()
 
-    def set_default_main_menu(self):
+    def set_default_main_menu(self) -> None:
         menu = tk.Menu(self)
 
         ###########
@@ -78,7 +82,7 @@ class App(tk.Tk):
         file_menu.add_separator()
         file_menu.add_command(label="Ukoncit", command=self.quit, accelerator="Ctrl+Q")
 
-        ###############
+        ##########
         # SQL Menu
         sql_menu = tk.Menu(menu, tearoff=0)
         sql_menu.add_command(label="Spustit vše")
