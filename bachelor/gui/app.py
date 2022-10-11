@@ -22,6 +22,8 @@ class App(tk.Tk):
 
         self.bind("<FocusIn>", self._set_default_main_menu_event)
 
+        self.con = SqliteDriver("./test_sqlite_db")
+
     def _init_layout(self) -> None:
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -44,9 +46,8 @@ class App(tk.Tk):
         self.paned_window.add(self._editor)  # type: ignore
 
     def _repl_init(self) -> None:
-        con = SqliteDriver("./test_sqlite_db")
 
-        self._repl = REPL(self, con)
+        self._repl = REPL(self, self.con)
         self._repl.grid(row=1, column=0, sticky=STICKY_ALL_SIDES)
         self.paned_window.add(self._repl)  # type: ignore
 
@@ -54,7 +55,7 @@ class App(tk.Tk):
         EditorWindow(self, self._editor.text)
 
     def _duplicate_repl(self) -> None:
-        REPLWindow(self, self._repl.text)
+        REPLWindow(self, self._repl.text, self.con)
 
     def _format_editor(self) -> None:
         self._editor.format()

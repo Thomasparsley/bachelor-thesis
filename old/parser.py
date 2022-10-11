@@ -11,7 +11,7 @@ START_COMMENT = ["--", "/*"]
 END_COMMENT = ["*/"]
 
 
-def is_start_comment(input: str) -> bool:
+def is_start_comment(input_: str) -> bool:
     """
     Returns whether the given input is a start comment.
 
@@ -34,10 +34,10 @@ def is_start_comment(input: str) -> bool:
         >>> is_start_comment("-- /*")
         False
     """
-    return input in START_COMMENT
+    return input_ in START_COMMENT
 
 
-def is_end_comment(input: str) -> bool:
+def is_end_comment(input_: str) -> bool:
     """
     Returns whether the given input is an end comment.
 
@@ -57,10 +57,10 @@ def is_end_comment(input: str) -> bool:
         >>> is_end_comment("/*")
         False
     """
-    return input in END_COMMENT
+    return input_ in END_COMMENT
 
 
-def is_single_line_comment(input: str) -> bool:
+def is_single_line_comment(input_: str) -> bool:
     """
     Returns whether the given input is a single line comment.
 
@@ -89,10 +89,10 @@ def is_single_line_comment(input: str) -> bool:
         >>> is_single_line_comment("--Single Line Comment /*\\n")
         True
     """
-    return input[0:2] == START_COMMENT[0] and is_new_line(input[len(input) - 1])
+    return input_[0:2] == START_COMMENT[0] and is_new_line(input_[len(input_) - 1])
 
 
-def is_multi_line_comment(input: str) -> bool:
+def is_multi_line_comment(input_: str) -> bool:
     """
     Returns whether the given input is a multi line comment.
 
@@ -115,11 +115,11 @@ def is_multi_line_comment(input: str) -> bool:
         >>> is_multi_line_comment("-- /*")
         False
     """
-    l = len(input)
-    return is_start_comment(input[0:2]) and is_end_comment(input[l - 2 : l])
+    l = len(input_)
+    return is_start_comment(input_[0:2]) and is_end_comment(input_[l - 2 : l])
 
 
-def is_comment(input: str) -> bool:
+def is_comment(input_: str) -> bool:
     """
     Returns whether the given input is a comment.
 
@@ -148,10 +148,10 @@ def is_comment(input: str) -> bool:
         >>> is_comment("-- /*")
         False
     """
-    return is_single_line_comment(input) or is_multi_line_comment(input)
+    return is_single_line_comment(input_) or is_multi_line_comment(input_)
 
 
-def is_new_line(input: str) -> bool:
+def is_new_line(input_: str) -> bool:
     """
     Returns whether the given input is a new line.
 
@@ -177,10 +177,10 @@ def is_new_line(input: str) -> bool:
         >>> is_new_line("\\r\\n\\n")
         False
     """
-    return input in NEW_LINES
+    return input_ in NEW_LINES
 
 
-def is_empty_char(input: str) -> bool:
+def is_empty_char(input_: str) -> bool:
     """
     Returns whether the given input is an empty char.
 
@@ -190,10 +190,10 @@ def is_empty_char(input: str) -> bool:
     Returns:
         bool: Whether the given input is an empty char.
     """
-    return input in EMPTY_CHARS
+    return input_ in EMPTY_CHARS
 
 
-def is_number(input: str) -> bool:
+def is_number(input_: str) -> bool:
     """
     Returns whether the given input is a number.
 
@@ -217,12 +217,10 @@ def is_number(input: str) -> bool:
         False
     """
     try:
-        if isinstance(float(input), float):
-            return True
+        float(input_)
+        return True
     except:
-        pass
-
-    return False
+        return False
 
 
 def is_keyword(input: str) -> bool:
@@ -245,7 +243,7 @@ def is_keyword(input: str) -> bool:
     return input in KEYWORDS
 
 
-def is_string(input: str) -> bool:
+def is_string(input_: str) -> bool:
     """
     Returns whether the given input is a string.
 
@@ -271,12 +269,12 @@ def is_string(input: str) -> bool:
         >>> is_string("''")
         True
     """
-    l = len(input)
+    l = len(input_)
 
     if l < 2:
         return False
 
-    return input[0] == "'" and input[len(input) - 1] == "'"
+    return input_[0] == "'" and input_[len(input_) - 1] == "'"
 
 
 def parse(text: str) -> List["Region"]:

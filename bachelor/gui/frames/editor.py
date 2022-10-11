@@ -3,8 +3,9 @@ from typing import Any
 
 from sqlparse import format as sql_format  #   type: ignore
 
+from app.sql.index import Index
+
 from ..types import TkEvent
-from ..utils.index import Index
 from ..cons import STICKY_ALL_SIDES
 from ..utils.events import events_caller
 from ..widgets.textpeer import TextPeer

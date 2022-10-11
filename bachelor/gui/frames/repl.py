@@ -1,10 +1,10 @@
 import tkinter as tk
 from typing import Any, Literal
 
+from app.sql.index import Index
 from app.db_driver.driver import Driver
 
 from .editor import Editor
-from ..utils.index import Index
 
 
 class REPL(Editor):

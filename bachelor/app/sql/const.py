@@ -36,3 +36,15 @@ SQL_KEYWORDS: Final = (
 )
 
 SQL_MACROS: Final = ("SYMDIFF",)
+SQL_WILDCARD: Final = "*"
+
+SPACE_CHAR: Final = " "
+NEW_LINES: Final = ("\n", "\r\n")
+EMPTY_CHARS: Final = (SPACE_CHAR, "\t", "\r", *NEW_LINES)
+
+START_COMMENT: Final = ("--", "/*")
+END_COMMENT: Final = "*/"
+
+LEFT_PARENTHESIS: Final = "("
+RIGHT_PARENTHESIS: Final = ")"
+PARENTHESES: Final = (LEFT_PARENTHESIS, RIGHT_PARENTHESIS)
