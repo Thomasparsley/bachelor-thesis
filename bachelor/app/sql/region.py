@@ -2,7 +2,7 @@ from .index import Index
 
 
 class Region:
-    __slots__ = ["start", "end"]
+    __slots__ = "start", "end"
 
     def __init__(self, start: Index, end: Index) -> None:
         self.start = start

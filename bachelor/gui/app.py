@@ -18,11 +18,11 @@ class App(tk.Tk):
 
         self.title(self._app_name)
 
+        self.con = SqliteDriver("./test_sqlite_db")
+
         self._init_layout()
 
         self.bind("<FocusIn>", self._set_default_main_menu_event)
-
-        self.con = SqliteDriver("./test_sqlite_db")
 
     def _init_layout(self) -> None:
         self.rowconfigure(0, weight=1)

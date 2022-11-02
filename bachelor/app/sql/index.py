@@ -1,4 +1,6 @@
 class Index:
+    __slots__ = "line", "char"
+
     def __init__(self, line: int = 0, char: int = 0):
         self.line = line
         self.char = char

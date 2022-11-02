@@ -6,7 +6,8 @@
 
 ## To make
 
-- [ ] UI může být víc editor like
+- [x] UI může být víc editor like
 - [ ] Run All, Run Selected, Format All, Format Selected in Menu
-- [ ] REPL mode
 - [ ] psycopg2 --> V3
+- [ ] Velikost písma pro okna, každé okno zvlášť
+- [x] FLEX (Fast Lexical Analysis)
