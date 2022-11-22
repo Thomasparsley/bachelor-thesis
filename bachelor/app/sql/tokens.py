@@ -1,7 +1,7 @@
 from pyparsing import CaselessKeyword
 
 
-KEYWORDS = "*, select, distinct, from, where, and, or, in, is, not, null, like, between, order by, asc, desc".upper().split(
+KEYWORDS = "*, select, distinct, from, where, and, or, in, is, not, null, like, between, order by, asc, desc, union, symdiff".upper().split(
     ", "
 )
 
@@ -22,5 +22,7 @@ KEYWORDS = "*, select, distinct, from, where, and, or, in, is, not, null, like, 
     ORDER_BY,
     ASC,
     DESC,
+    UNION,
+    SYMDIFF,
 ) = map(CaselessKeyword, KEYWORDS)
 NOT_NULL = NOT + NULL

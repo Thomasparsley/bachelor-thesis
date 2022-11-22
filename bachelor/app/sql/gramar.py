@@ -33,6 +33,8 @@ from .tokens import (
     BETWEEN,
     ORDER_BY,
     WILDCARD,
+    UNION,
+    SYMDIFF,
 )
 
 #
@@ -100,12 +102,16 @@ block_select = Group(SELECT + DISTINCT | SELECT) + (WILDCARD | column_name_list)
     "columns"
 )
 block_from = FROM + table_name_list("tables")
-block_where = Optional(Group(WHERE + expression_where), "")("where")
-block_order_by = Optional(Group(ORDER_BY + column_name_list + (ASC | DESC)), "")(
-    "order_by"
-)
+block_where = Optional(Group(WHERE + expression_where), None)("where")
+block_order_by = Optional(
+    Group(ORDER_BY + column_name_list + Optional(ASC | DESC, ASC)), None
+)("order_by")
+
+_select = block_select + block_from + block_where + block_order_by
 
 statement_select: ParserElement
-statement_select <<= block_select + block_from + block_where + block_order_by
+statement_select <<= (
+    Group(_select) + (UNION | SYMDIFF) + Group(statement_select) | _select
+)
 
 comment = "--" + rest_of_line

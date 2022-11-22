@@ -1,8 +1,20 @@
 from bachelor.app.sql import parse
 
+a = parse(
+    """
+    SELECT dataset_1_select
+    FROM dataset_1
 
-print(
-    parse(
-        "SELECT * FROM Products WHERE Price BETWEEN 50 AND 60 OR asd is null ORDER BY column1, column2 DESC;"
-    )
+    SYMDIFF
+
+    SELECT dataset_2_select
+    FROM dataset_2
+
+    SYMDIFF
+
+    SELECT dataset_3_select
+    FROM dataset_3
+    """
 )
+
+print(a)
